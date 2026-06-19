@@ -8,6 +8,16 @@ Unlike a conventional academic RTL project, this processor was taken beyond func
 
 The project demonstrates the complete journey from processor architecture design to a physically realizable chip layout while maintaining timing, area, and power constraints.
 
+## ASIC Implementation Highlights
+
+### Routing
+
+![Routing](ASIC_Flow/routing.png)
+
+### Post-Route Timing Verification
+
+![Timing Verification](ASIC_Flow/innovus_timing.png)
+
 ---
 
 ## Project Highlights
