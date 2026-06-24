@@ -1,20 +1,35 @@
-# 8-Bit RISC Processor | RTL-to-ASIC Implementation
+# 8-Bit RISC Processor with Runtime Workload Monitoring and Adaptive Frequency Scaling
 
 ## Overview
 
-This project presents the design, verification, and ASIC implementation of a custom **8-Bit RISC Processor** developed using **Verilog HDL** and implemented through an industry-standard digital VLSI design flow.
+This project presents the design, verification, ASIC implementation, FPGA deployment, and architectural enhancement of a custom **8-Bit RISC Processor** developed using **Verilog HDL**.
 
-Unlike a conventional academic RTL project, this processor was taken beyond functional simulation and successfully implemented through **logic synthesis, floorplanning, power planning, placement, clock tree synthesis, routing, timing verification, and physical verification** using **Cadence Genus** and **Cadence Innovus**.
+The processor was designed from scratch and taken through a complete digital design flow including RTL development, functional verification, FPGA implementation, and ASIC physical design using **Cadence Genus** and **Cadence Innovus**.
 
-The project demonstrates the complete journey from processor architecture design to a physically realizable chip layout while maintaining timing, area, and power constraints.
+To extend the capabilities of a conventional educational RISC processor, a **Runtime Workload Monitoring** subsystem and **Adaptive Frequency Scaling (AFS)** mechanism were implemented. The processor continuously monitors instruction execution patterns, classifies workload characteristics, and dynamically adjusts its operating frequency based on the dominant workload type.
 
-## ASIC Implementation Highlights
+This project demonstrates the complete journey from processor architecture design to hardware validation while incorporating runtime architectural optimization techniques inspired by modern processors and System-on-Chips (SoCs).
 
-### Routing
+---
+
+## FPGA & ASIC Implementation Highlights
+
+### FPGA Hardware Validation
+
+* Successfully implemented on Xilinx PYNQ-Z2 FPGA
+* Real-time processor validation using onboard switches and LEDs
+* Program Counter verification
+* ALU verification
+* Memory access verification
+* Branch execution verification
+
+### ASIC Physical Design
+
+#### Routing
 
 ![Routing](ASIC_Flow/routing.png)
 
-### Post-Route Timing Verification
+#### Post-Route Timing Verification
 
 ![Timing Verification](ASIC_Flow/innovus_timing.png)
 
@@ -39,6 +54,8 @@ The project demonstrates the complete journey from processor architecture design
 
 ## Key Features
 
+### Processor Architecture
+
 * Custom 8-Bit RISC Architecture
 * Harvard-Style Memory Organization
 * Single-Cycle Processor Design
@@ -47,9 +64,21 @@ The project demonstrates the complete journey from processor architecture design
 * Branch Instructions
 * Shift Operations
 * Data Memory Access
+
+### Verification & Implementation
+
 * Modular RTL Design
-* Complete Functional Verification
-* ASIC Physical Design Implementation
+* Functional Verification
+* FPGA Hardware Validation
+* ASIC Physical Design Flow
+
+### Architectural Enhancement
+
+* Runtime Workload Monitoring
+* Observation Window-Based Classification
+* Adaptive Frequency Scaling (AFS)
+* Dynamic Workload Mode Selection
+* Runtime Clock Adaptation
 
 ---
 
@@ -88,25 +117,64 @@ The project demonstrates the complete journey from processor architecture design
 
 ---
 
-## Processor Datapath
+## Runtime Workload Monitoring
 
-The processor is composed of the following major modules:
+To enhance processor adaptability, a runtime workload monitoring subsystem was integrated into the processor.
 
-* Program Counter (PC)
-* Instruction Memory
-* Decoder
-* Control Unit
-* Register File
-* Arithmetic Logic Unit (ALU)
-* Data Memory
-* Execute Unit
-* CPU Top Module
+The monitor continuously observes executed instructions and classifies processor activity into:
+
+| Category         | Instructions                                     |
+| ---------------- | ------------------------------------------------ |
+| ALU Intensive    | ADD, SUB, AND, OR, XOR, ADDI, SUBI, LI, SLL, SRL |
+| Memory Intensive | LOAD, STORE                                      |
+| Branch Intensive | BEQ                                              |
+
+Three hardware counters are maintained:
+
+* alu_count
+* mem_count
+* branch_count
+
+The processor operates using a fixed observation window. At the end of each window, the dominant workload type is identified and encoded into a workload mode.
+
+### Workload Modes
+
+| Mode | Description  |
+| ---- | ------------ |
+| 00   | ALU Heavy    |
+| 01   | Memory Heavy |
+| 10   | Branch Heavy |
+
+Detailed Documentation:
+
+📄 Documentation/Runtime_Workload_Monitoring_AFS.md
+
+---
+
+## Adaptive Frequency Scaling (AFS)
+
+The Adaptive Frequency Scaling unit receives the workload classification and dynamically selects the processor clock divider.
+
+### Frequency Scaling Policy
+
+| Workload Mode | Operating State   | Divider |
+| ------------- | ----------------- | ------- |
+| 00            | High Performance  | 10      |
+| 01            | Balanced Mode     | 20      |
+| 10            | Power Saving Mode | 40      |
+
+Operational Flow:
+
+Instruction Stream
+→ Workload Monitor
+→ Workload Classification
+→ Adaptive Frequency Scaling
+→ Clock Divider
+→ Processor Clock
 
 ---
 
 ## Verification Flow
-
-The processor was verified at both module and system levels.
 
 ### Module Verification
 
@@ -115,7 +183,6 @@ The processor was verified at both module and system levels.
 * Instruction Memory
 * Decoder
 * Control Unit
-* Fetch Unit
 * Execute Unit
 
 ### System Verification
@@ -124,6 +191,8 @@ The processor was verified at both module and system levels.
 * Instruction Execution Verification
 * Branch Verification
 * Memory Access Verification
+* Runtime Workload Monitoring Verification
+* Adaptive Frequency Scaling Verification
 
 ### Tools Used
 
@@ -133,13 +202,32 @@ The processor was verified at both module and system levels.
 
 ---
 
-## ASIC Implementation Flow
+## FPGA Implementation
 
-The verified RTL was taken through a complete digital ASIC implementation flow.
+### Platform
+
+* Xilinx PYNQ-Z2
+* XC7Z020 FPGA
+
+### Hardware Validation
+
+Successfully validated:
+
+* Program Counter Operation
+* ALU Outputs
+* Immediate Generation
+* Memory Access
+* Branch Execution
+* Runtime Workload Classification
+* Adaptive Frequency Scaling
+
+---
+
+## ASIC Implementation Flow
 
 ### Logic Synthesis
 
-Tool Used:
+Tool:
 
 * Cadence Genus
 
@@ -151,7 +239,7 @@ Generated Reports:
 
 ### Physical Design
 
-Tool Used:
+Tool:
 
 * Cadence Innovus
 
@@ -164,7 +252,6 @@ Implementation Stages:
 * Routing
 * Timing Verification
 * Connectivity Verification
-* DRC Verification
 * Geometry Verification
 
 ---
@@ -187,39 +274,33 @@ Implementation Stages:
 
 ### Physical Verification
 
-* DRC Violations : 0
-* Geometry Violations : 0
-* Connectivity Verification : Passed
-* Timing Verification : Passed
+* DRC Violations: 0
+* Geometry Violations: 0
+* Connectivity Verification: Passed
+* Timing Verification: Passed
 
 ---
 
 ## Repository Structure
 
 ```text
-8-Bit-RISC-Processor/
+8bit-RISC-Processor/
 │
 ├── RTL/
-│   ├── alu.v
-│   ├── register_file.v
-│   ├── decoder.v
-│   ├── control_unit.v
-│   ├── fetch.v
-│   ├── execute.v
-│   ├── cpu.v
-│   └── ...
-│
 ├── Testbench/
-│
 ├── Simulation/
-│
+├── FPGA/
 ├── ASIC_Flow/
+│
+├── Runtime_workload_monitoring_AFS/
 │
 ├── Documentation/
 │   ├── ISA.md
 │   ├── RTL_Design.md
 │   ├── Simulation_Results.md
-│   └── ASIC_Flow.md
+│   ├── FPGA_Implementation.md
+│   ├── ASIC_Flow.md
+│   └── Runtime_Workload_Monitoring_AFS.md
 │
 └── README.md
 ```
@@ -235,14 +316,20 @@ Implementation Stages:
 * Processor Architecture
 * Datapath Design
 * Control Unit Design
-* FSM Design
+
+### Computer Architecture
+
+* Instruction Set Design
+* Runtime Workload Analysis
+* Dynamic Frequency Scaling
+* Processor Optimization
 
 ### Verification
 
 * Functional Verification
 * Testbench Development
 * Simulation Debugging
-* Gate-Level Validation
+* Hardware Validation
 
 ### Physical Design
 
@@ -252,7 +339,6 @@ Implementation Stages:
 * Placement
 * Routing
 * Static Timing Analysis
-* Physical Verification
 
 ### EDA Tools
 
@@ -265,11 +351,14 @@ Implementation Stages:
 
 ## Future Work
 
+* Clock Gating Integration
+* Dynamic Voltage and Frequency Scaling (DVFS)
+* Performance Counter Integration
+* Workload Prediction Algorithms
 * Calibre DRC
 * LVS Verification
-* Parasitic Extraction (PEX)
-* Signoff Static Timing Analysis
-* Final GDSII Generation
+* Signoff STA
+* GDSII Signoff
 
 ---
 
@@ -278,10 +367,8 @@ Implementation Stages:
 **Amrutha Gorji**
 
 B.Tech Electronics and Communication Engineering
-
 SASTRA Deemed University
 
 Research Intern – NIT Warangal
 
-Digital VLSI | RTL Design | ASIC Design | Computer Architecture
-
+Digital VLSI | RTL Design | ASIC Design | FPGA Design | Computer Architecture
